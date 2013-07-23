@@ -10,6 +10,11 @@
 int MAXITER  = 100;  // Max iteration for each point on complex plane
 int INFINITY = 16.0; // Definition of "infinity" to stop iterating
 
+/***** Setup ****************************************/
+size(640, 360); // Size of view port
+noLoop();
+background(255);
+
 // Establish a range of values on the complex plane
 // A different range will allow us to "zoom" in or out on the fractal
 // float xmin = -1.5; float ymin = -.1; float wh = 0.15;
@@ -18,18 +23,8 @@ float ymin = -1.25;
 float w = 5.0;
 float h = 2.5;
 
-// width of controller
-int ctrl_width = 0;
-// height of controller
-int ctrl_height = 0;
-// width of image
-int img_width = width - ctrl_width;
-// height of image
-int img_height = height;
-
-size(640, 360);
-noLoop();
-background(255);
+// width and height of controller
+int ctrl_width = 0; int ctrl_height = 0;
 
 // Make sure we can write to the pixels[] array.
 // Only need to do this once since we don't do any other drawing.
@@ -75,7 +70,7 @@ for (int j = 0; j < height; j++) {
     }
     else {
       // Gosh, we could make fancy colors here if we wanted
-      // pixels[i+j*width] = color(n*16 % 255);
+      // pixels[i+j*] = color(n*16 % 255);
        pixels[i+j*width] = color(n*16 % 255, n*32 % 255, n*64 % 255);
     }
     x += dx;
