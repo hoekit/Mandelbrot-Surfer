@@ -11,8 +11,10 @@ int MAXITER  = 100;  // Max iteration for each point on complex plane
 int INFINITY = 16.0; // Definition of "infinity" to stop iterating
 float W = 5.0;  // Width that x values traverse
 float H = 2.5;  // Height that y values traverse
-int width = 600;  // Synchronize with size() below
+int width = 640;  // Synchronize with size() below
 int height = 360; // Synchronize with size() below
+int center_x = width / 2;
+int center_y = height / 2;
 
 /***** Global Variables ****************************************/
 // Establish a range of values on the complex plane
@@ -31,16 +33,22 @@ float dy = H / (height) / zoom;
 
 // Visual Controllers
 int ctrl_width = 40;
+int ctrl_height = height;
+int btn_width = 40;
+// x, y coordinates of top-left of controller
+int ctrl_x = width - ctrl_width; 
+int ctrl_y = 0;
+
 boolean view_needs_update = true;
 
 // GUI Elements
-//Button btn_plus  = new Button("plus" , width-40+2,    2, 36, 36);
-//Button btn_minus = new Button("minus", width-40+2, 40+2, 36, 36);
+Button btn_plus  = new Button("plus" , ctrl_x-5, ctrl_y+5 , btn_width, btn_width);
+Button btn_minus = new Button("minus", ctrl_x-5, ctrl_y+50, btn_width, btn_width);
 
 void setup() {
-  size(600, 360); // Size of view port
+  size(640, 360); // Size of view port
                   // Synchronize with width, height settings above
-  shift_origin(-ctrl_width/2,0);
+  //shift_origin(-ctrl_width/2,0);
   //background(255);
   //noLoop();
 }
@@ -52,16 +60,31 @@ void draw() {
   }
 }
 
+void mouseReleased()
+{
+  if (btn_plus.mouseReleased()) {
+    zoom_change(+0.05);
+  } else if (btn_minus.mouseReleased()) {
+    zoom_change(-0.05);
+  }
+}
+
 void mouseDragged() {
   //zoom_change(+0.5);
   shift_origin(0.1,0);
 }
 
 void draw_controls() {
-  fill(0,0,0,128);
+  fill(128,128,128,128);
   //stroke(255,255,255,255);
   strokeWeight(0);
-  rect(width-ctrl_width,0,ctrl_width,height-1);
+  //rect(width-ctrl_width,0,ctrl_width,height-1);
+  // draw plus-control
+  //rect(ctrl_x-5, ctrl_y+5, btn_width, btn_width, 10,10,0,0);
+  // draw minus-control
+  //rect(ctrl_x-5, ctrl_y+50, btn_width, btn_width, 0,0,10,10);
+  btn_plus.display();   
+  btn_minus.display();   
 }
 
 // Update view of Mandelbrot image
@@ -129,3 +152,4 @@ void shift_origin(int x_pixels, int y_pixels) {
   origin_y = origin_y - y_pixels * dy;
   view_needs_update = true;
 }
+
