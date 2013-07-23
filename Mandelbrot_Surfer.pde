@@ -42,6 +42,8 @@ int ctrl_y = 0;
 boolean view_needs_update = true;
 
 // GUI Elements
+int[] plus  = { ctrl_x-5, ctrl_y+5 , btn_width, btn_width };
+int[] minus = { ctrl_x-5, ctrl_y+50, btn_width, btn_width };
 Button btn_plus  = new Button("plus" , ctrl_x-5, ctrl_y+5 , btn_width, btn_width);
 Button btn_minus = new Button("minus", ctrl_x-5, ctrl_y+50, btn_width, btn_width);
 
@@ -60,12 +62,14 @@ void draw() {
   }
 }
 
-void mouseReleased()
+void mousePressed()
 {
-  if (btn_plus.mouseReleased()) {
+  if (btn_plus.mousePressed()) {
     zoom_change(+0.05);
-  } else if (btn_minus.mouseReleased()) {
+  } else if (btn_minus.mousePressed()) {
     zoom_change(-0.05);
+  } else {
+    shift_origin(-mouseX+center_x, -mouseY+center_y);
   }
 }
 
@@ -140,10 +144,11 @@ void update_view(float orig_x, float orig_y, float dx, float dy) {
 
 void zoom_change(int n) {
   if (zoom + n >= 1) {
-    zoom = zoom + n;
+    zoom = zoom * (1+n);
     dx = W / (width) / zoom;
     dy = H / (height) / zoom;
     view_needs_update = true;
+    println(zoom);
   }
 }
 
