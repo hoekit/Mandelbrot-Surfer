@@ -6,18 +6,18 @@
  * Simple rendering of the Mandelbrot set.
  */
 
-/***** GLOBAL PARAMETERS ****************************************/
+/***** GLOBAL CONSTANTS ****************************************/
 int MAXITER  = 100;  // Max iteration for each point on complex plane
 int INFINITY = 16.0; // Definition of "infinity" to stop iterating
+float W = 5.0;  // Width that x values traverse
+float H = 2.5;  // Height that y values traverse
 int width = 640;
 int height = 360;
 
-/***** Setup ****************************************/
+/***** Global Variables ****************************************/
 // Establish a range of values on the complex plane
 // A different range will allow us to "zoom" in or out on the fractal
 // float xmin = -1.5; float ymin = -.1; float wh = 0.15;
-float w = 5.0;
-float h = 2.5;
 // Origin / Center of image
 float orig_x = -0.5;
 float orig_y =  0.0; 
@@ -26,19 +26,29 @@ float orig_y =  0.0;
 float zoom = 1;
 
 // Calculate amount we increment x,y for each pixel
-float dx = w / (width) / zoom;
-float dy = h / (height) / zoom;
+float dx = W / (width) / zoom;
+float dy = H / (height) / zoom;
+
+// Visual Controllers
+boolean view_needs_update = true;
 
 void setup() {
   size(640, 360); // Size of view port
-  noLoop();
-  background(255);
+  //background(255);
+  //noLoop();
 }
 
 void draw() {
-  update_view(orig_x, orig_y, dx, dy);
+  if (view_needs_update) {
+    update_view(orig_x, orig_y, dx, dy);
+  }
 }
 
+void mouseReleased() {
+  zoom_change(+0.5);
+}
+
+// Update view of Mandelbrot image
 void update_view(float orig_x, float orig_y, float dx, float dy) {
   // Make sure we can write to the pixels[] array.
   // Only need to do this once since we don't do any other drawing.
@@ -86,5 +96,15 @@ void update_view(float orig_x, float orig_y, float dx, float dy) {
     y += dy;
   }
   updatePixels();
+  view_needs_update = false;
+}
+
+void zoom_change(int n) {
+  if (zoom + n >= 1) {
+    zoom = zoom + n;
+    dx = W / (width) / zoom;
+    dy = H / (height) / zoom;
+    view_needs_update = true;
+  }
 }
 
