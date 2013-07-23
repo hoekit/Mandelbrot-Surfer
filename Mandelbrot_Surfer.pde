@@ -11,16 +11,16 @@ int MAXITER  = 100;  // Max iteration for each point on complex plane
 int INFINITY = 16.0; // Definition of "infinity" to stop iterating
 float W = 5.0;  // Width that x values traverse
 float H = 2.5;  // Height that y values traverse
-int width = 640;
-int height = 360;
+int width = 600;  // Synchronize with size() below
+int height = 360; // Synchronize with size() below
 
 /***** Global Variables ****************************************/
 // Establish a range of values on the complex plane
 // A different range will allow us to "zoom" in or out on the fractal
 // float xmin = -1.5; float ymin = -.1; float wh = 0.15;
 // Origin / Center of image
-float orig_x = -0.5;
-float orig_y =  0.0; 
+float origin_x = -0.5;
+float origin_y =  0.0; 
 
 // Zoom factor
 float zoom = 1;
@@ -30,22 +30,38 @@ float dx = W / (width) / zoom;
 float dy = H / (height) / zoom;
 
 // Visual Controllers
+int ctrl_width = 40;
 boolean view_needs_update = true;
 
+// GUI Elements
+//Button btn_plus  = new Button("plus" , width-40+2,    2, 36, 36);
+//Button btn_minus = new Button("minus", width-40+2, 40+2, 36, 36);
+
 void setup() {
-  size(640, 360); // Size of view port
+  size(600, 360); // Size of view port
+                  // Synchronize with width, height settings above
+  shift_origin(-ctrl_width/2,0);
   //background(255);
   //noLoop();
 }
 
 void draw() {
   if (view_needs_update) {
-    update_view(orig_x, orig_y, dx, dy);
+    update_view(origin_x, origin_y, dx, dy);
+    draw_controls();
   }
 }
 
-void mouseReleased() {
-  zoom_change(+0.5);
+void mouseDragged() {
+  //zoom_change(+0.5);
+  shift_origin(0.1,0);
+}
+
+void draw_controls() {
+  fill(0,0,0,128);
+  //stroke(255,255,255,255);
+  strokeWeight(0);
+  rect(width-ctrl_width,0,ctrl_width,height-1);
 }
 
 // Update view of Mandelbrot image
@@ -108,3 +124,8 @@ void zoom_change(int n) {
   }
 }
 
+void shift_origin(int x_pixels, int y_pixels) {
+  origin_x = origin_x - x_pixels * dx; // Move origin by x_pixels
+  origin_y = origin_y - y_pixels * dy;
+  view_needs_update = true;
+}
