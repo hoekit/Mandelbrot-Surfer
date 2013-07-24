@@ -9,6 +9,7 @@
 /***** GLOBAL CONSTANTS ****************************************/
 int MAXITER  = 100;  // Max iteration for each point on complex plane
 int INFINITY = 16.0; // Definition of "infinity" to stop iterating
+int ZOOM_STEP = 0.05; // Zoom step each time zoom in or out
 float W = 5.0;  // Width that x values traverse
 float H = 2.5;  // Height that y values traverse
 int width = 640;  // Synchronize with size() below
@@ -31,6 +32,9 @@ float zoom = 1;
 float dx = W / (width) / zoom;
 float dy = H / (height) / zoom;
 
+boolean view_needs_update = true;
+
+/***** GUI Elements **************************************************/
 // Visual Controllers
 int ctrl_width = 40;
 int ctrl_height = height;
@@ -39,13 +43,12 @@ int btn_width = 40;
 int ctrl_x = width - ctrl_width; 
 int ctrl_y = 0;
 
-boolean view_needs_update = true;
-
-// GUI Elements
-int[] plus  = { ctrl_x-5, ctrl_y+5 , btn_width, btn_width };
-int[] minus = { ctrl_x-5, ctrl_y+50, btn_width, btn_width };
-Button btn_plus  = new Button("plus" , ctrl_x-5, ctrl_y+5 , btn_width, btn_width);
-Button btn_minus = new Button("minus", ctrl_x-5, ctrl_y+50, btn_width, btn_width);
+int[] vecPlus  = { ctrl_x-5, ctrl_y+5 , btn_width, btn_width }; // x,y,w,h
+int[] vecMinus = { ctrl_x-5, ctrl_y+50, btn_width, btn_width }; // x,y,w,h
+Button btn_plus  = new Button("plus" , vecPlus[0], vecPlus[1], vecPlus[2], vecPlus[3]);
+Button btn_minus = new Button("minus", vecMinus[0], vecMinus[1], vecMinus[2], vecMinus[3]);
+boolean atPlus;  // True if mouseX and mouseY is in plus Button
+boolean atMinus; // True if mouseX and mouseY is in minus Button
 
 void setup() {
   size(640, 360); // Size of view port
@@ -56,18 +59,26 @@ void setup() {
 }
 
 void draw() {
+  if (mousePressed) {
+    updateAtFlags(); // Update atPlus, atMinus flags
+    if (atPlus) {
+      zoom_in();
+    } else if (atMinus) {
+      zoom_out();
+    }
+  }
   if (view_needs_update) {
     update_view(origin_x, origin_y, dx, dy);
     draw_controls();
   }
 }
 
-void mousePressed()
+void amousePressed()
 {
   if (btn_plus.mousePressed()) {
-    zoom_change(+0.05);
+    zoom_in();
   } else if (btn_minus.mousePressed()) {
-    zoom_change(-0.05);
+    zoom_out();
   } else {
     shift_origin(-mouseX+center_x, -mouseY+center_y);
   }
@@ -142,13 +153,21 @@ void update_view(float orig_x, float orig_y, float dx, float dy) {
   view_needs_update = false;
 }
 
+void zoom_in() {
+  zoom_change(ZOOM_STEP);
+}
+
+void zoom_out() {
+  zoom_change(-ZOOM_STEP);
+}
+
 void zoom_change(int n) {
   if (zoom + n >= 1) {
     zoom = zoom * (1+n);
     dx = W / (width) / zoom;
     dy = H / (height) / zoom;
     view_needs_update = true;
-    println(zoom);
+    //println(zoom);
   }
 }
 
@@ -158,3 +177,21 @@ void shift_origin(int x_pixels, int y_pixels) {
   view_needs_update = true;
 }
 
+// Update atPlus, atMinus flags 
+// atPlus : True if mouseX and mouseY is in plus Button
+// atMinus: True if mouseX and mouseY is in minus Button
+//int[] vecPlus  = { ctrl_x-5, ctrl_y+5 , btn_width, btn_width }; // x,y,w,h
+//int[] vecMinus = { ctrl_x-5, ctrl_y+50, btn_width, btn_width }; // x,y,w,h
+void updateAtFlags() {
+  atPlus  = (inRect(mouseX, mouseY, vecPlus));
+  atMinus = (inRect(mouseX, mouseY, vecMinus));
+}
+
+// Return true if posX and posY is in vector 
+boolean inRect(int posX, int posY, int[] vec) {
+  if ((posX > vec[0]) && (posX < vec[2]+vec[0]) &&
+      (posY > vec[1]) && (posY < vec[3]+vec[1]))
+    return true;
+  else
+    return false;
+}
