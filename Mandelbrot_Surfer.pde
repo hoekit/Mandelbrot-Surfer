@@ -7,7 +7,9 @@
  */
 
 /***** GLOBAL CONSTANTS ****************************************/
-int MAXITER  = 100;  // Max iteration for each point on complex plane
+// Max iteration for each point on complex plane. 
+// Higher MAXITER is slower but show more detail at higher zoom 
+int MAXITER  = 100;  
 int INFINITY = 16.0; // Definition of "infinity" to stop iterating
 int ZOOM_STEP = 0.05; // Zoom step each time zoom in or out
 int MAX_STEP_PIXELS = 10; // move at most n pixels at a time when stepping
@@ -30,13 +32,17 @@ float target_origin_x = origin_x;
 float target_origin_y = origin_y;
 
 // Zoom factor
-float zoom = 1;
+int zoom = 1;
 
 // Calculate amount we increment x,y for each pixel
 float dx = W / (width) / zoom;
 float dy = H / (height) / zoom;
 
 boolean view_needs_update = true;
+
+float[] palette = { 
+  38.612, 8.602, 216.196
+};
 
 /***** GUI Elements **************************************************/
 // Visual Controllers
@@ -53,12 +59,18 @@ int[] vecPlus  = {
 int[] vecMinus = { 
   ctrl_x, ctrl_y+50, btn_width, btn_width
 }; // x,y,w,h
+int[] vecPalette = {
+  ctrl_x, ctrl_y+100, btn_width, btn_width
+};
 int[] vecView  = { 
   0, 0, ctrl_x, height
 }; // x,y,w,h
 boolean atPlus;  // True if mouseX and mouseY is in plus Button
 boolean atMinus; // True if mouseX and mouseY is in minus Button
-boolean atView; // True if mouseX and mouseY is in main view
+boolean atPalette;  // True if mouseX and mouseY is in main view
+boolean atView;  // True if mouseX and mouseY is in main view
+
+/***** Processing Behaviour ******************************************/
 
 void setup() {
   size(640, 360); // Size of view port, Synchronize with width, height above
@@ -72,6 +84,9 @@ void draw() {
     } 
     else if (atMinus) {
       zoom_out();
+    } 
+    else if (atPalette) {
+      random_palette();
     } 
     else if (atView) {
       set_target_origin(mouseX, mouseY);
@@ -94,6 +109,7 @@ void draw_controls() {
   // draw zoom-in-control and zoom-out-control
   rect(vecPlus[0], vecPlus[1], vecPlus[2], vecPlus[3], 15, 15, 0, 0);
   rect(vecMinus[0], vecMinus[1], vecMinus[2], vecMinus[3], 0, 0, 15, 15);
+  rect(vecPalette[0], vecPalette[1], vecPalette[2], vecPalette[3], 10);
 }
 
 // Update view of Mandelbrot image
@@ -137,7 +153,8 @@ void update_view(float orig_x, float orig_y, float dx, float dy) {
       else {
         // Gosh, we could make fancy colors here if we wanted
         // pixels[i+j*] = color(n*16 % 255);
-        pixels[i+j*width] = color(n*16 % 255, n*32 % 255, n*64 % 255);
+        pixels[i+j*width] = color(n*palette[0] % 255
+          , n*palette[1] % 255, n*palette[2] % 255);
       }
       x += dx;
     }
@@ -161,7 +178,7 @@ void zoom_change(int n) {
     dx = W / (width) / zoom;
     dy = H / (height) / zoom;
     view_needs_update = true;
-    //println(zoom);
+    //println("Zoom: "+zoom);
   }
 }
 
@@ -202,6 +219,7 @@ void step_to_origin() {
 void updateAtFlags() {
   atPlus  = (inRect(mouseX, mouseY, vecPlus));
   atMinus = (inRect(mouseX, mouseY, vecMinus));
+  atPalette = (inRect(mouseX, mouseY, vecPalette));
   atView  = (inRect(mouseX, mouseY, vecView));
 }
 
@@ -212,5 +230,13 @@ boolean inRect(int posX, int posY, int[] vec) {
     return true;
   else
     return false;
+}
+
+void random_palette() {
+  palette[0] = random(256); 
+  palette[1] = random(256); 
+  palette[2] = random(256);
+  view_needs_update = true;
+  //println(palette);
 }
 
