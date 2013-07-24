@@ -10,6 +10,7 @@
 int MAXITER  = 100;  // Max iteration for each point on complex plane
 int INFINITY = 16.0; // Definition of "infinity" to stop iterating
 int ZOOM_STEP = 0.05; // Zoom step each time zoom in or out
+int MAX_STEP_PIXELS = 10; // move at most n pixels at a time when stepping
 float W = 5.0;  // Width that x values traverse
 float H = 2.5;  // Height that y values traverse
 int width = 640;  // Synchronize with size() below
@@ -24,6 +25,9 @@ int center_y = height / 2;
 // Origin / Center of image
 float origin_x = -0.5;
 float origin_y =  0.0; 
+// Target origin is the point the view will move to
+float target_origin_x = origin_x;
+float target_origin_y = origin_y;
 
 // Zoom factor
 float zoom = 1;
@@ -57,11 +61,7 @@ boolean atMinus; // True if mouseX and mouseY is in minus Button
 boolean atView; // True if mouseX and mouseY is in main view
 
 void setup() {
-  size(640, 360); // Size of view port
-  // Synchronize with width, height settings above
-  //shift_origin(-ctrl_width/2,0);
-  //background(255);
-  //noLoop();
+  size(640, 360); // Size of view port, Synchronize with width, height above
 }
 
 void draw() {
@@ -74,8 +74,12 @@ void draw() {
       zoom_out();
     } 
     else if (atView) {
-      shift_origin(-mouseX+center_x, -mouseY+center_y);
+      set_target_origin(mouseX, mouseY);
     }
+  }
+  // Shift origin if target is different
+  if ((origin_x != target_origin_x) || (origin_y != target_origin_y)) {
+    step_to_origin();
   }
   if (view_needs_update) {
     update_view(origin_x, origin_y, dx, dy);
@@ -161,24 +165,47 @@ void zoom_change(int n) {
   }
 }
 
-void shift_origin(int x_pixels, int y_pixels) {
-  origin_x = origin_x - x_pixels * dx; // Move origin by x_pixels
-  origin_y = origin_y - y_pixels * dy;
+// Sets the target origin given posX and posY 
+void set_target_origin(int posX, int posY) {
+  target_origin_x = origin_x + (posX - center_x) * dx;
+  target_origin_y = origin_y + (posY - center_y) * dy;
+}
+
+// Steps to origin
+void step_to_origin1() {
+  origin_x = target_origin_x;
+  origin_y = target_origin_y;
   view_needs_update = true;
 }
 
-// Update atPlus, atMinus flags 
-// atPlus : True if mouseX and mouseY is in plus Button
-// atMinus: True if mouseX and mouseY is in minus Button
-//int[] vecPlus  = { ctrl_x-5, ctrl_y+5 , btn_width, btn_width }; // x,y,w,h
-//int[] vecMinus = { ctrl_x-5, ctrl_y+50, btn_width, btn_width }; // x,y,w,h
+void step_to_origin() {
+  float vec_x = target_origin_x - origin_x;
+  float vec_y = target_origin_y - origin_y;
+  float vec_px = vec_x / dx;
+  float vec_py = vec_y / dy;
+
+  int num_steps  = ceil(max(abs(vec_px), abs(vec_py)) / MAX_STEP_PIXELS);
+  /*
+  println("Vec X: " + vec_x);
+   println("Vec Y: " + vec_y);
+   println("Vec pX: " + vec_px);
+   println("Vec pY: " + vec_py);
+   println("Num steps: " + num_steps);
+   */
+
+  origin_x = origin_x + vec_x/num_steps;
+  origin_y = origin_y + vec_y/num_steps;
+  view_needs_update = true;
+}
+
+// Set respective flag to true if mouse at the rectangle/button 
 void updateAtFlags() {
   atPlus  = (inRect(mouseX, mouseY, vecPlus));
   atMinus = (inRect(mouseX, mouseY, vecMinus));
   atView  = (inRect(mouseX, mouseY, vecView));
 }
 
-// Return true if posX and posY is in vector 
+// Produce true if posX and posY is in vector 
 boolean inRect(int posX, int posY, int[] vec) {
   if ((posX > vec[0]) && (posX < vec[2]+vec[0]) &&
     (posY > vec[1]) && (posY < vec[3]+vec[1]))
