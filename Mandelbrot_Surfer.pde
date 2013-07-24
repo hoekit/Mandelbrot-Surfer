@@ -1,10 +1,11 @@
 /**
- * The Mandelbrot Set
- * Originally by Daniel Shiffman.
- * Modified by Chew Hoe-Kit  
- * 
- * Simple rendering of the Mandelbrot set.
+ * Click on the image to start -- happy exploring!</br>
+ * Vote for new features <a href="http://wideopenstudy.blogspot.com/2013/07/mandelbrot-surfer.html">here</a>.
  */
+
+/* The Mandelbrot Set originally by Daniel Shiffman.
+ * Modified by Chew Hoe-Kit.
+ */ 
 
 /***** GLOBAL CONSTANTS ****************************************/
 // Max iteration for each point on complex plane. 
