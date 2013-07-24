@@ -36,23 +36,29 @@ boolean view_needs_update = true;
 
 /***** GUI Elements **************************************************/
 // Visual Controllers
-int ctrl_width = 40;
+int ctrl_width = 45;
 int ctrl_height = height;
 int btn_width = 40;
 // x, y coordinates of top-left of controller
 int ctrl_x = width - ctrl_width; 
 int ctrl_y = 0;
 
-int[] vecPlus  = { ctrl_x-5, ctrl_y+5 , btn_width, btn_width }; // x,y,w,h
-int[] vecMinus = { ctrl_x-5, ctrl_y+50, btn_width, btn_width }; // x,y,w,h
-Button btn_plus  = new Button("plus" , vecPlus[0], vecPlus[1], vecPlus[2], vecPlus[3]);
-Button btn_minus = new Button("minus", vecMinus[0], vecMinus[1], vecMinus[2], vecMinus[3]);
+int[] vecPlus  = { 
+  ctrl_x, ctrl_y+5, btn_width, btn_width
+}; // x,y,w,h
+int[] vecMinus = { 
+  ctrl_x, ctrl_y+50, btn_width, btn_width
+}; // x,y,w,h
+int[] vecView  = { 
+  0, 0, ctrl_x, height
+}; // x,y,w,h
 boolean atPlus;  // True if mouseX and mouseY is in plus Button
 boolean atMinus; // True if mouseX and mouseY is in minus Button
+boolean atView; // True if mouseX and mouseY is in main view
 
 void setup() {
   size(640, 360); // Size of view port
-                  // Synchronize with width, height settings above
+  // Synchronize with width, height settings above
   //shift_origin(-ctrl_width/2,0);
   //background(255);
   //noLoop();
@@ -63,8 +69,12 @@ void draw() {
     updateAtFlags(); // Update atPlus, atMinus flags
     if (atPlus) {
       zoom_in();
-    } else if (atMinus) {
+    } 
+    else if (atMinus) {
       zoom_out();
+    } 
+    else if (atView) {
+      shift_origin(-mouseX+center_x, -mouseY+center_y);
     }
   }
   if (view_needs_update) {
@@ -73,33 +83,13 @@ void draw() {
   }
 }
 
-void amousePressed()
-{
-  if (btn_plus.mousePressed()) {
-    zoom_in();
-  } else if (btn_minus.mousePressed()) {
-    zoom_out();
-  } else {
-    shift_origin(-mouseX+center_x, -mouseY+center_y);
-  }
-}
-
-void mouseDragged() {
-  //zoom_change(+0.5);
-  shift_origin(0.1,0);
-}
-
 void draw_controls() {
-  fill(128,128,128,128);
-  //stroke(255,255,255,255);
-  strokeWeight(0);
-  //rect(width-ctrl_width,0,ctrl_width,height-1);
-  // draw plus-control
-  //rect(ctrl_x-5, ctrl_y+5, btn_width, btn_width, 10,10,0,0);
-  // draw minus-control
-  //rect(ctrl_x-5, ctrl_y+50, btn_width, btn_width, 0,0,10,10);
-  btn_plus.display();   
-  btn_minus.display();   
+  fill(144, 144, 144, 196);
+  stroke(144);
+
+  // draw zoom-in-control and zoom-out-control
+  rect(vecPlus[0], vecPlus[1], vecPlus[2], vecPlus[3], 15, 15, 0, 0);
+  rect(vecMinus[0], vecMinus[1], vecMinus[2], vecMinus[3], 0, 0, 15, 15);
 }
 
 // Update view of Mandelbrot image
@@ -107,17 +97,17 @@ void update_view(float orig_x, float orig_y, float dx, float dy) {
   // Make sure we can write to the pixels[] array.
   // Only need to do this once since we don't do any other drawing.
   loadPixels();
-  
+
   float xmin = orig_x - (width * dx)/2;
   float ymin = orig_y - (height * dy)/2;
-  
+
   // Start y
   float y = ymin;
   for (int j = 0; j < height; j++) {
     // Start x
     float x = xmin;
     for (int i = 0;  i < width; i++) {
-  
+
       // Now we test, as we iterate z = z^2 + cm does z tend towards infinity?
       float a = x;
       float b = y;
@@ -134,7 +124,7 @@ void update_view(float orig_x, float orig_y, float dx, float dy) {
         }
         n++;
       }
-  
+
       // We color each pixel based on how long it takes to get to infinity
       // If we never got there, let's pick the color black
       if (n == MAXITER) {
@@ -143,7 +133,7 @@ void update_view(float orig_x, float orig_y, float dx, float dy) {
       else {
         // Gosh, we could make fancy colors here if we wanted
         // pixels[i+j*] = color(n*16 % 255);
-         pixels[i+j*width] = color(n*16 % 255, n*32 % 255, n*64 % 255);
+        pixels[i+j*width] = color(n*16 % 255, n*32 % 255, n*64 % 255);
       }
       x += dx;
     }
@@ -185,13 +175,15 @@ void shift_origin(int x_pixels, int y_pixels) {
 void updateAtFlags() {
   atPlus  = (inRect(mouseX, mouseY, vecPlus));
   atMinus = (inRect(mouseX, mouseY, vecMinus));
+  atView  = (inRect(mouseX, mouseY, vecView));
 }
 
 // Return true if posX and posY is in vector 
 boolean inRect(int posX, int posY, int[] vec) {
   if ((posX > vec[0]) && (posX < vec[2]+vec[0]) &&
-      (posY > vec[1]) && (posY < vec[3]+vec[1]))
+    (posY > vec[1]) && (posY < vec[3]+vec[1]))
     return true;
   else
     return false;
 }
+
