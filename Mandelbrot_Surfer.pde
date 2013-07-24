@@ -53,6 +53,9 @@ int btn_width = 40;
 int ctrl_x = width - ctrl_width; 
 int ctrl_y = 0;
 
+Pimage zoomInImage  = loadImage("zoom_in.png");
+Pimage zoomOutImage = loadImage("zoom_out.png");
+Pimage paletteImage = loadImage("palette.png");
 int[] vecPlus  = { 
   ctrl_x, ctrl_y+5, btn_width, btn_width
 }; // x,y,w,h
@@ -103,13 +106,9 @@ void draw() {
 }
 
 void draw_controls() {
-  fill(144, 144, 144, 196);
-  stroke(144);
-
-  // draw zoom-in-control and zoom-out-control
-  rect(vecPlus[0], vecPlus[1], vecPlus[2], vecPlus[3], 15, 15, 0, 0);
-  rect(vecMinus[0], vecMinus[1], vecMinus[2], vecMinus[3], 0, 0, 15, 15);
-  rect(vecPalette[0], vecPalette[1], vecPalette[2], vecPalette[3], 10);
+  image(zoomInImage,  vecPlus[0]+4, vecPlus[1]+4);
+  image(zoomOutImage, vecMinus[0]+4, vecMinus[1]+4);
+  image(paletteImage,  vecPalette[0]+4, vecPalette[1]+4);
 }
 
 // Update view of Mandelbrot image
