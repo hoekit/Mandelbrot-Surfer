@@ -109,7 +109,7 @@ void draw() {
   if (view_needs_update) {
     update_view(origin_x, origin_y, dx, dy);
     draw_controls();
-    ejs.link = "http://www.firexis.com/_experiments/index.html"
+    ejs.link = "http://www.firexis.com/Mandelbrot-Surfer/index.html"
                +"?mxitr="+MAXITER
                +"&orgnx="+origin_x
                +"&orgny="+origin_y
@@ -117,6 +117,8 @@ void draw() {
                +"&pltrd="+palette[0]
                +"&pltgrn="+palette[1]
                +"&pltbl="+palette[2];
+    ejs.link_encoded = encodeURIComponent(ejs.link);
+    ejs.twitter_share = "http://twitter.com/share?url="+ejs.link_encoded;
     if (debug_msgs == 1) {
       println("link: "+ejs.link);
     }
