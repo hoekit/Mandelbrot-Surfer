@@ -1,6 +1,9 @@
 /**
- * Click on the image to start -- happy exploring!</br>
- * Vote for new features <a href="http://wideopenstudy.blogspot.com/2013/07/mandelbrot-surfer.html">here</a>.
+ * Click on the image to begin. </br> 
+ * Share your find: 
+ *    <a href="#" id='twitter_share'>Twitter</a> 
+ *    / <a href="#" id='url_share'>URL</a> 
+ * | Request <a href="http://wideopenstudy.blogspot.com/2013/07/mandelbrot-surfer.html" target="_blank">new features</a>.
  */
 
 /* The Mandelbrot Set originally by Daniel Shiffman.
@@ -118,7 +121,6 @@ void draw() {
                +"&pltgrn="+palette[1]
                +"&pltbl="+palette[2];
     ejs.link_encoded = encodeURIComponent(ejs.link);
-    ejs.twitter_share = "http://twitter.com/share?url="+ejs.link_encoded;
     if (debug_msgs == 1) {
       println("link: "+ejs.link);
     }
