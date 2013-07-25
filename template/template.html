@@ -68,5 +68,11 @@
 			</script>
 		</p></div>
 -->
+			<script type="text/javascript">
+              document.getElementById("twitter_share").onclick = function() {
+                open("http://twitter.com/share?url="+ejs.link_encoded);};
+              document.getElementById("url_share").onclick = function() {
+                open(ejs.link);};
+			</script>
 	</body>
 </html>
