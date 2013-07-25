@@ -31,11 +31,12 @@
   // convenience function to get the id attribute of generated sketch html element
   function getProcessingSketchId () { return 'javascriptexample'; }
 
-  // This script parses the URL and stors into objURL
-  var objURL = new Object();
+  // This script parses the URL and stores into ejs.url_param
+  var ejs = new Object(); // top-level object
+  ejs.url_param = new Object();
     window.location.search.replace(
       new RegExp( "([^?=&]+)(=([^&]*))?", "g" ),
-      function( $0, $1, $2, $3 ){ objURL[ $1 ] = $3; }
+      function( $0, $1, $2, $3 ){ ejs.url_param[ $1 ] = $3; }
     );
 </script>
 @@scripts@@
@@ -56,5 +57,16 @@
 		<h1>@@sketch@@</h1>
    		<p id="description">@@description@@</p>
 		</div>
+<!--		<div><p>
+			<script type="text/javascript">
+				// This script reads and writes contents of ejs.url_param
+				// Loop over the URL values that we collected.
+				for (var strKey in ejs.url_param){
+					document.write( "<strong>" + strKey + ":</strong> " );
+					document.write( ejs.url_param[ strKey ] + "<br />" );
+				}
+			</script>
+		</p></div>
+-->
 	</body>
 </html>

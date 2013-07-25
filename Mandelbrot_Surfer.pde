@@ -9,8 +9,8 @@
 
 /***** GLOBAL CONSTANTS ****************************************/
 // Max iteration for each point on complex plane. 
-// Higher MAXITER is slower but show more detail at higher zoom 
-int MAXITER  = 100;  
+// Higher is slower but show more detail at higher zoom 
+int MAXITER  = int(ejs.url_param["mxitr"] || 100);  
 int INFINITY = 16.0; // Definition of "infinity" to stop iterating
 int ZOOM_STEP = 0.05; // Zoom step each time zoom in or out
 int MAX_STEP_PIXELS = 10; // move at most n pixels at a time when stepping
@@ -26,14 +26,14 @@ int center_y = height / 2;
 // A different range will allow us to "zoom" in or out on the fractal
 // float xmin = -1.5; float ymin = -.1; float wh = 0.15;
 // Origin / Center of image
-float origin_x = -0.5;
-float origin_y =  0.0; 
+float origin_x = float(ejs.url_param["orgnx"] || -0.5);
+float origin_y = float(ejs.url_param["orgny"] || 0.0); 
 // Target origin is the point the view will move to
 float target_origin_x = origin_x;
 float target_origin_y = origin_y;
 
 // Zoom factor
-int zoom = 1;
+int zoom = int(ejs.url_param["zm"] || 1);
 
 // Calculate amount we increment x,y for each pixel
 float dx = W / (width) / zoom;
@@ -41,9 +41,15 @@ float dy = H / (height) / zoom;
 
 boolean view_needs_update = true;
 
+float plt_red   = float(ejs.url_param["pltrd"]  || 38.612);
+float plt_green = float(ejs.url_param["pltgrn"] || 8.602);
+float plt_blue  = float(ejs.url_param["pltbl"]  || 216.196);
 float[] palette = { 
-  38.612, 8.602, 216.196
+  plt_red, plt_green, plt_blue 
 };
+
+// debug_msgs is 1 if printlns are to be shown
+int debug_msgs = int(ejs.url_param["dbgmsgs"] || 0);
 
 /***** GUI Elements **************************************************/
 // Visual Controllers
@@ -103,6 +109,17 @@ void draw() {
   if (view_needs_update) {
     update_view(origin_x, origin_y, dx, dy);
     draw_controls();
+    ejs.link = "http://www.firexis.com/_experiments/index.html"
+               +"?mxitr="+MAXITER
+               +"&orgnx="+origin_x
+               +"&orgny="+origin_y
+               +"&zm="+zoom
+               +"&pltrd="+palette[0]
+               +"&pltgrn="+palette[1]
+               +"&pltbl="+palette[2];
+    if (debug_msgs == 1) {
+      println("link: "+ejs.link);
+    }
   }
 }
 
@@ -161,7 +178,7 @@ void update_view(float orig_x, float orig_y, float dx, float dy) {
     y += dy;
   }
   updatePixels();
-  view_needs_update = false;
+  view_needs_update = false;  
 }
 
 void zoom_in() {
