@@ -70,7 +70,11 @@
 -->
 			<script type="text/javascript">
               document.getElementById("twitter_share").onclick = function() {
-                open("http://twitter.com/share?url="+ejs.link_encoded);};
+                open("http://twitter.com/share?text="
+				     +ejs.link_title+"&url="+ejs.link_encoded);};
+              document.getElementById("tumblr_share").onclick = function() {
+                open("http://tumblr.com/share?s=&v=3&t="
+				     +ejs.link_title+"&u="+ejs.link_encoded);};
               document.getElementById("url_share").onclick = function() {
                 open(ejs.link);};
 			</script>

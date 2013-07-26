@@ -1,9 +1,10 @@
 /**
  * Click on the image to begin. </br> 
- * Share your find: 
- *    <a href="#" id='twitter_share'>Twitter</a> 
- *    / <a href="#" id='url_share'>URL</a> 
- * | Request <a href="http://wideopenstudy.blogspot.com/2013/07/mandelbrot-surfer.html" target="_blank">new features</a>.
+ * Share your find on 
+ *   <a href="#" id='twitter_share'>Twitter</a>
+ *   /  <a href="#" id='tumblr_share'>Tumblr</a>
+ * | Get <a href="#" id='url_share'>URL</a> 
+ * | Request <a href="http://wideopenstudy.blogspot.com/2013/07/mandelbrot-surfer.html" target="_blank">features</a>.
  */
 
 /* The Mandelbrot Set originally by Daniel Shiffman.
@@ -90,6 +91,17 @@ void setup() {
 }
 
 void draw() {
+  if(keyPressed) {
+    if (key == '+') {
+      zoom_in();
+    }
+    else if (key == '-') {
+      zoom_out();
+    }
+    else if (key == 'c' || key == 'C') {
+      random_palette();
+    }
+  }
   if (mousePressed) {
     updateAtFlags(); // Update atPlus, atMinus flags
     if (atPlus) {
@@ -121,6 +133,7 @@ void draw() {
                +"&pltgrn="+palette[1]
                +"&pltbl="+palette[2];
     ejs.link_encoded = encodeURIComponent(ejs.link);
+    ejs.link_title = "A delightful mandelbrot bauble! ";
     if (debug_msgs == 1) {
       println("link: "+ejs.link);
     }
